@@ -3,7 +3,7 @@ package com.portfolio.model;
 public class companies {
     private String name;
     private String ticker;
-    private String description; // New field
+    private String description;
     private double currentPrice;
     private PriceUpdateStrategy strategy;
 
@@ -15,8 +15,8 @@ public class companies {
         this.strategy = strategy;
     }
 
-    // Add getters for the new fields
+    
     public String getTicker() { return ticker; }
     public String getDescription() { return description; }
-    // ... rest of your existing methods
+    
 }

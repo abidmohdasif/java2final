@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio Simulator</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Portfolio Simulator - Day 5</h1>
+    <div class="dashboard">
+        <div class="card">
+            <h3>Market Prices</h3>
+            <table>
+                <tr><th>Ticker</th><th>Price</th><th>Action</th></tr>
+                <tr><td>ZENE</td><td>$155.20</td><td><button>Buy</button></td></tr>
+                <tr><td>AETH</td><td>$92.10</td><td><button>Buy</button></td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <h3>Your Portfolio</h3>
+            <p>Liquid Cash: <strong>$98,400</strong></p>
+            <ul>
+                <li>ZENE: 10 shares</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

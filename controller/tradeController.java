@@ -14,7 +14,7 @@ public class TradeController {
     }
 
     public void processBuy(String ticker, int quantity) {
-        Company company = market.findCompany(ticker); // You need to add this method in MarketSimulator
+        Company company = market.findCompany(ticker); 
         if (company != null && player.canAfford(company.getCurrentPrice(), quantity)) {
             player.buy(company, quantity);
             System.out.println("Trade successful!");

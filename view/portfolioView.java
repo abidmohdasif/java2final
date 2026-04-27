@@ -1,13 +1,33 @@
 package com.portfolio.model;
+import java.util.Map;
 
-public class PortfolioView {
-    public void display(Player player, MarketSimulator market) {
-        System.out.printf("Cash: $%.2f%n", player.getCash());
-        player.getPortfolio().getHoldings().forEach((ticker, qty) -> {
-            Company c = market.findCompany(ticker);
-            double value = c != null ? c.getCurrentPrice() * qty : 0;
-            System.out.printf("  %s: %d shares @ $%.2f = $%.2f%n",
-                ticker, qty, c.getCurrentPrice(), value);
-        });
+public class PortfolioView implements MarketObserver {
+    private Player player;
+
+    public PortfolioView(Player player) {
+        this.player = player;
+    }
+
+    @Override
+    public void update(MarketSimulator market) {
+        System.out.println("------------- YOUR PORTFOLIO -------------");
+        System.out.printf("Available Cash: $%.2f\n", player.getCash());
+        
+        double totalValue = player.getCash();
+        Map<String, Integer> holdings = player.getPortfolio().getHoldings();
+        
+        if (holdings.isEmpty()) {
+            System.out.println("Holdings: None");
+        } else {
+            System.out.println("Holdings:");
+            for (Map.Entry<String, Integer> entry : holdings.entrySet()) {
+                Company c = market.findCompany(entry.getKey());
+                double value = c.getCurrentPrice() * entry.getValue();
+                totalValue += value;
+                System.out.printf("  %-5s: %d shares (Value: $%.2f)\n", entry.getKey(), entry.getValue(), value);
+            }
+        }
+        System.out.printf("Total Net Worth: $%.2f\n", totalValue);
+        System.out.println("------------------------------------------\n");
     }
 }

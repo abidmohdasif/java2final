@@ -6,6 +6,17 @@ public class companies {
     private String description;
     private double currentPrice;
     private PriceUpdateStrategy strategy;
+    
+    public String getName() { 
+        return name; 
+    }
+    
+    public double getCurrentPrice() { 
+        return currentPrice; 
+    }
+    public void updatePrice() { 
+        this.currentPrice = strategy.updatePrice(currentPrice); 
+    }
 
     public companies(String name, String ticker, String description, double initialPrice, PriceUpdateStrategy strategy) {
         this.name = name;

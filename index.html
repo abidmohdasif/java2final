@@ -1,33 +1,292 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Portfolio Simulator</title>
-    <style>
-        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio Simulator</title>
+<style>
+  :root { --green: #639922; --green-light: #EAF3DE; --red: #E24B4A; --red-light: #FCEBEB; --bg: #f7f7f5; --surface: #ffffff; --surface2: #f1f0eb; --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22); --text: #1a1a18; --text2: #5f5e5a; --radius: 8px; --radius-lg: 12px; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2c; --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2); --text: #f0efe8; --text2: #888780; --green-light: #173404; --red-light: #501313; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Courier New', Courier, monospace; background: var(--bg); color: var(--text); padding: 24px 20px; min-height: 100vh; }
+  #app { max-width: 740px; margin: 0 auto; }
+  .hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
+  .hdr h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.07em; color: var(--text); }
+  .day-badge { font-size: 12px; color: var(--text2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 3px 10px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
+  .metric { background: var(--surface2); border-radius: var(--radius); padding: 10px 12px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .metric-val { font-size: 18px; font-weight: 600; color: var(--text); }
+  .metric-val.pos { color: var(--green); }
+  .metric-val.neg { color: var(--red); }
+  .advance-btn { width: 100%; padding: 9px; font-family: 'Courier New', Courier, monospace; font-size: 13px; cursor: pointer; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--surface2); color: var(--text); letter-spacing: 0.05em; margin-bottom: 12px; transition: background 0.15s; }
+  .advance-btn:hover { background: var(--border); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media(max-width: 500px) { .cols { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 0; }
+  .card-title { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; margin-bottom: 10px; }
+  .stock-row { display: flex; align-items: center; gap: 6px; padding: 7px 0; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+  .stock-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .ticker { font-size: 13px; font-weight: 600; color: var(--text); min-width: 42px; }
+  .price { font-size: 13px; color: var(--text); min-width: 62px; }
+  .chg { font-size: 11px; min-width: 52px; }
+  .chg.up { color: var(--green); }
+  .chg.dn { color: var(--red); }
+  .qty-input { width: 52px; font-family: 'Courier New', Courier, monospace; font-size: 12px; padding: 3px 6px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--surface2); color: var(--text); }
+  .btn-buy, .btn-sell { font-size: 11px; padding: 3px 8px; border-radius: var(--radius); cursor: pointer; font-family: 'Courier New', Courier, monospace; transition: background 0.1s; }
+  .btn-buy { background: var(--green-light); color: #27500A; border: 0.5px solid #97C459; }
+  .btn-sell { background: var(--red-light); color: #791F1F; border: 0.5px solid #F09595; }
+  .btn-buy:hover { filter: brightness(0.93); }
+  .btn-sell:hover { filter: brightness(0.93); }
+  .hold-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
+  .hold-row:last-child { border-bottom: none; }
+  .hold-name { color: var(--text); font-weight: 600; }
+  .hold-qty { color: var(--text2); }
+  .hold-val { color: var(--text); }
+  .empty-msg { font-size: 12px; color: var(--text2); padding: 8px 0; }
+  .chart-wrap { position: relative; height: 200px; margin-bottom: 12px; }
+  .log { max-height: 150px; overflow-y: auto; font-size: 11px; line-height: 1.8; }
+  .log-entry.buy { color: var(--green); }
+  .log-entry.sell { color: var(--red); }
+  .log-entry.day { color: var(--text2); border-top: 0.5px dashed var(--border); margin-top: 2px; padding-top: 3px; }
+  .gap12 { display: flex; flex-direction: column; gap: 12px; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 7px 18px; border-radius: var(--radius); font-size: 12px; font-family: 'Courier New', Courier, monospace; background: var(--surface); border: 0.5px solid var(--border2); color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+</style>
 </head>
 <body>
-    <h1>Portfolio Simulator - Day 5</h1>
-    <div class="dashboard">
-        <div class="card">
-            <h3>Market Prices</h3>
-            <table>
-                <tr><th>Ticker</th><th>Price</th><th>Action</th></tr>
-                <tr><td>ZENE</td><td>$155.20</td><td><button>Buy</button></td></tr>
-                <tr><td>AETH</td><td>$92.10</td><td><button>Buy</button></td></tr>
-            </table>
-        </div>
-        <div class="card">
-            <h3>Your Portfolio</h3>
-            <p>Liquid Cash: <strong>$98,400</strong></p>
-            <ul>
-                <li>ZENE: 10 shares</li>
-            </ul>
-        </div>
+<div id="app">
+  <div class="hdr">
+    <h1>PORTFOLIO SIMULATOR</h1>
+    <span class="day-badge" id="day-label">DAY 1</span>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">CASH</div><div class="metric-val" id="m-cash">$100,000</div></div>
+    <div class="metric"><div class="metric-label">HOLDINGS</div><div class="metric-val" id="m-hold">$0</div></div>
+    <div class="metric"><div class="metric-label">TOTAL VALUE</div><div class="metric-val" id="m-total">$100,000</div></div>
+    <div class="metric"><div class="metric-label">P&amp;L</div><div class="metric-val" id="m-pnl">$0</div></div>
+  </div>
+
+  <button class="advance-btn" onclick="advanceDay()">&#9654; ADVANCE TO NEXT DAY</button>
+
+  <div class="cols">
+    <div class="card">
+      <div class="card-title">MARKET</div>
+      <div id="market-rows"></div>
     </div>
+    <div class="card">
+      <div class="card-title">YOUR HOLDINGS</div>
+      <div id="hold-rows"></div>
+    </div>
+  </div>
+
+  <div class="gap12">
+    <div class="card">
+      <div class="card-title">PRICE HISTORY</div>
+      <div class="chart-wrap">
+        <canvas id="price-chart" role="img" aria-label="Line chart showing stock price history over multiple days"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">TRANSACTION LOG</div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const STOCKS = [
+  { ticker: 'ZENE', name: 'Zenith Energy',    price: 155.20, vol: 0.025 },
+  { ticker: 'AETH', name: 'Aether Systems',   price: 92.10,  vol: 0.030 },
+  { ticker: 'NOVA', name: 'Nova Robotics',    price: 214.50, vol: 0.035 },
+  { ticker: 'FLUX', name: 'Flux Dynamics',    price: 47.80,  vol: 0.040 },
+];
+
+const state = {
+  day: 1,
+  cash: 100000,
+  portfolio: {},
+  prevPrices: {},
+  log: [],
+};
+
+STOCKS.forEach(s => { state.prevPrices[s.ticker] = s.price; });
+
+const fmt    = v => '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const fmtInt = v => '$' + Math.round(v).toLocaleString();
+
+function holdingsValue() {
+  return STOCKS.reduce((sum, s) => sum + s.price * (state.portfolio[s.ticker] || 0), 0);
+}
+
+/* ── Render Market ───────────────────────────────────────────── */
+function renderMarket() {
+  document.getElementById('market-rows').innerHTML = STOCKS.map(s => {
+    const prev    = state.prevPrices[s.ticker];
+    const chgPct  = (s.price - prev) / prev * 100;
+    const chgCls  = chgPct >= 0 ? 'up' : 'dn';
+    const chgStr  = (chgPct >= 0 ? '+' : '') + chgPct.toFixed(2) + '%';
+    return `<div class="stock-row">
+      <span class="ticker">${s.ticker}</span>
+      <span class="price">${fmt(s.price)}</span>
+      <span class="chg ${chgCls}">${chgStr}</span>
+      <input class="qty-input" id="qty-${s.ticker}" type="number" min="1" value="1" />
+      <button class="btn-buy"  onclick="buy('${s.ticker}')">BUY</button>
+      <button class="btn-sell" onclick="sell('${s.ticker}')">SELL</button>
+    </div>`;
+  }).join('');
+}
+
+/* ── Render Holdings ─────────────────────────────────────────── */
+function renderHoldings() {
+  const el   = document.getElementById('hold-rows');
+  const held = STOCKS.filter(s => (state.portfolio[s.ticker] || 0) > 0);
+  if (!held.length) { el.innerHTML = '<div class="empty-msg">No positions held.</div>'; return; }
+  el.innerHTML = held.map(s => {
+    const qty = state.portfolio[s.ticker];
+    const val = qty * s.price;
+    return `<div class="hold-row">
+      <span class="hold-name">${s.ticker}</span>
+      <span class="hold-qty">${qty} sh</span>
+      <span class="hold-val">${fmtInt(val)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── Render Metrics ──────────────────────────────────────────── */
+function renderMetrics() {
+  const hv    = holdingsValue();
+  const total = state.cash + hv;
+  const pnl   = total - 100000;
+  document.getElementById('m-cash').textContent  = fmtInt(state.cash);
+  document.getElementById('m-hold').textContent  = fmtInt(hv);
+  document.getElementById('m-total').textContent = fmtInt(total);
+  const pnlEl = document.getElementById('m-pnl');
+  pnlEl.textContent  = (pnl >= 0 ? '+' : '') + fmtInt(pnl);
+  pnlEl.className    = 'metric-val ' + (pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : '');
+  document.getElementById('day-label').textContent = 'DAY ' + state.day;
+}
+
+/* ── Render Log ──────────────────────────────────────────────── */
+function renderLog() {
+  document.getElementById('log').innerHTML =
+    [...state.log].reverse()
+      .map(e => `<div class="log-entry ${e.type}">${e.msg}</div>`)
+      .join('');
+}
+
+/* ── Chart ───────────────────────────────────────────────────── */
+let chart;
+const CHART_COLORS = ['#639922', '#E24B4A', '#185FA5', '#BA7517'];
+
+function initChart() {
+  const ctx = document.getElementById('price-chart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Day 1'],
+      datasets: STOCKS.map((s, i) => ({
+        label: s.ticker,
+        data: [parseFloat(s.price.toFixed(2))],
+        borderColor: CHART_COLORS[i],
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        pointRadius: 2,
+        tension: 0.3,
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { font: { family: 'Courier New', size: 11 }, boxWidth: 10, padding: 12, color: '#888780' }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { family: 'Courier New', size: 10 }, color: '#888780' },
+          grid:  { color: 'rgba(136,135,128,0.15)' }
+        },
+        y: {
+          ticks: { font: { family: 'Courier New', size: 10 }, color: '#888780', callback: v => '$' + v.toFixed(0) },
+          grid:  { color: 'rgba(136,135,128,0.15)' }
+        }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  chart.data.labels.push('Day ' + state.day);
+  STOCKS.forEach((s, i) => { chart.data.datasets[i].data.push(parseFloat(s.price.toFixed(2))); });
+  chart.update();
+}
+
+/* ── Actions ─────────────────────────────────────────────────── */
+function buy(ticker) {
+  const s    = STOCKS.find(x => x.ticker === ticker);
+  const qty  = parseInt(document.getElementById('qty-' + ticker).value) || 1;
+  const cost = s.price * qty;
+  if (cost > state.cash) { showToast('Insufficient funds'); return; }
+  state.cash -= cost;
+  state.portfolio[ticker] = (state.portfolio[ticker] || 0) + qty;
+  state.log.push({ type: 'buy', msg: `DAY ${state.day} | BUY  ${qty} ${ticker} @ ${fmt(s.price)} = ${fmt(cost)}` });
+  render();
+}
+
+function sell(ticker) {
+  const s       = STOCKS.find(x => x.ticker === ticker);
+  const qty     = parseInt(document.getElementById('qty-' + ticker).value) || 1;
+  const held    = state.portfolio[ticker] || 0;
+  if (qty > held) { showToast('Not enough shares'); return; }
+  const proceeds = s.price * qty;
+  state.cash += proceeds;
+  state.portfolio[ticker] -= qty;
+  state.log.push({ type: 'sell', msg: `DAY ${state.day} | SELL ${qty} ${ticker} @ ${fmt(s.price)} = ${fmt(proceeds)}` });
+  render();
+}
+
+function advanceDay() {
+  STOCKS.forEach(s => {
+    state.prevPrices[s.ticker] = s.price;
+    const drift = (Math.random() - 0.48) * 2 * s.vol;
+    s.price = Math.max(1, s.price * (1 + drift));
+  });
+  state.log.push({ type: 'day', msg: `─── End of Day ${state.day} ───────────────────` });
+  state.day++;
+  updateChart();
+  render();
+}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ── Init ────────────────────────────────────────────────────── */
+function render() {
+  renderMarket();
+  renderHoldings();
+  renderMetrics();
+  renderLog();
+}
+
+initChart();
+render();
+</script>
 </body>
 </html>

@@ -10,8 +10,6 @@ import java.util.concurrent.TimeUnit;
 public class TradeController {
     private MarketSimulator market;
     private Player player;
-    private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
 
     public TradeController(MarketSimulator market, Player player) {
         this.market = market;
@@ -28,14 +26,4 @@ public class TradeController {
         }
     }
 
-    public void advanceDay() {
-        int[] dayCount = {0};
-        scheduler.scheduleAtFixedRate(() -> {
-            market.nextDay();
-            dayCount[0]++;
-            if (dayCount[0] >= 30) {
-                scheduler.shutdown();
-            }
-        }, 0, 60, TimeUnit.SECONDS);
-    }
 }

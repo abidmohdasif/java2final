@@ -1,13 +1,17 @@
 package com.portfolio.model;
-import java.util.List;
 
-public class MarketView {
-    public void display(List<Company> companies) {
-        System.out.printf("%-20s %-6s %10s%n", "Company", "Ticker", "Price");
-        System.out.println("-".repeat(40));
-        for (Company c : companies) {
-            System.out.printf("%-20s %-6s $%9.2f%n",
-                c.getName(), c.getTicker(), c.getCurrentPrice());
+public class MarketView implements MarketObserver {
+    @Override
+    public void update(MarketSimulator market) {
+        System.out.println("\n========================================");
+        System.out.println("             DAY " + market.getCurrentDay() + " MARKET");
+        System.out.println("========================================");
+        System.out.println("NEWS: " + market.getLatestNews());
+        System.out.println("----------------------------------------");
+        for (Company c : market.getCompanies()) {
+            System.out.printf("%-5s | $%-8.2f | %s\n", c.getTicker(), c.getCurrentPrice(), c.getName());
         }
+        System.out.println("========================================\n");
     }
+}
 }

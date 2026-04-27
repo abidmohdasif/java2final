@@ -1,7 +1,3 @@
-import controller.TradeController;
-import model.MarketSimulator;
-import model.Player;
-
 public class Main {
     public static void main(String[] args) {
         // 1. Initialize Model

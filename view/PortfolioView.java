@@ -1,5 +1,8 @@
-package com.portfolio.model;
 import java.util.Map;
+import model.Company;
+import model.MarketObserver;
+import model.MarketSimulator;
+import model.Player;
 
 public class PortfolioView implements MarketObserver {
     private Player player;

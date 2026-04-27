@@ -1,4 +1,4 @@
-package com.portfolio.model;
+package model;
 
 public class Company {
     private String name;
@@ -28,5 +28,4 @@ public class Company {
     public void applyEventImpact(double multiplier) {
         this.currentPrice = Math.round(this.currentPrice * multiplier * 100.0) / 100.0;
     }
-}
 }

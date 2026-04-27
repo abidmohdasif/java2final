@@ -1,4 +1,4 @@
-package com.portfolio.model;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;

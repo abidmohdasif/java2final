@@ -1,11 +1,8 @@
-package com.portfolio.model;
+package controller;
 
+import model.Company;
 import model.MarketSimulator;
 import model.Player;
-import model.Company;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class TradeController {
     private MarketSimulator market;
@@ -26,4 +23,7 @@ public class TradeController {
         }
     }
 
+    public void advanceDay() {
+        market.nextDay();
+    }
 }

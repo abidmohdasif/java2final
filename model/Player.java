@@ -1,4 +1,4 @@
-package com.portfolio.model;
+package model;
 
 public class Player {
     private double cash;

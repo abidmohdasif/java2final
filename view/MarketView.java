@@ -1,4 +1,6 @@
-package com.portfolio.model;
+import model.Company;
+import model.MarketObserver;
+import model.MarketSimulator;
 
 public class MarketView implements MarketObserver {
     @Override
@@ -13,5 +15,4 @@ public class MarketView implements MarketObserver {
         }
         System.out.println("========================================\n");
     }
-}
 }

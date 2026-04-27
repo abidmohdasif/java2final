@@ -1,5 +1,5 @@
-package com.portfolio.model;
+package model;
 
 public interface MarketObserver {
-    void update(marketSimulator market);
+    void update(MarketSimulator market);
 }

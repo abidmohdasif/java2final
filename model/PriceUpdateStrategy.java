@@ -1,4 +1,4 @@
-package com.portfolio.model;
+package model;
 
 public interface PriceUpdateStrategy {
     double updatePrice(double currentPrice);

@@ -20,7 +20,7 @@ public class MarketSimulator {
         observers.add(observer);
     }
 
-    private void notifyObservers() {
+    public void notifyObservers() {
         for (MarketObserver observer : observers) {
             observer.update(this);
         }

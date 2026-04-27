@@ -1,3 +1,5 @@
+package view;
+
 import model.Company;
 
 public class CompanyDetails {

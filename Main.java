@@ -1,39 +1,69 @@
 import controller.TradeController;
 import model.MarketSimulator;
 import model.Player;
+import view.MarketView;
+import view.PortfolioView;
+import view.EndGameView;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Initialize Model
         MarketSimulator market = new MarketSimulator();
         Player player = new Player(100_000.0);
-        
-        // 2. Initialize Controller
+
         TradeController controller = new TradeController(market, player);
-        
-        // 3. Initialize Views
+
         MarketView marketView = new MarketView();
         PortfolioView portfolioView = new PortfolioView(player);
         EndGameView endGameView = new EndGameView(player);
 
-        // 4. Register Views to the MarketSimulator (Observer Pattern)
         market.attach(marketView);
         market.attach(portfolioView);
         market.attach(endGameView);
 
-        // --- GAMEPLAY DEMO ---
-        // Normally, you would use a Scanner here to take input from the user in a loop.
-        System.out.println("Starting the 30-Day Trading Simulator...");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the 30-Day Trading Simulator!");
 
-        // Player makes a trade on Day 1
-        controller.processBuy("ZENE", 100);
-        
-        // Advancing the day automatically triggers update() on MarketView, PortfolioView, etc.
-        controller.advanceDay(); 
+        // Trigger initial view so player can see the market on Day 1
+        market.notifyObservers();
 
-        // Simulating the rest of the month rapidly to test the End Game condition
-        for (int i = 2; i <= 30; i++) {
-            controller.advanceDay();
+        while (!controller.isGameOver()) {
+            System.out.println("Commands: BUY <ticker> <qty> | SELL <ticker> <qty> | NEXT | QUIT");
+            System.out.print("> ");
+            String input = scanner.nextLine().trim().toUpperCase();
+            String[] parts = input.split("\\s+");
+
+            switch (parts[0]) {
+                case "BUY":
+                    if (parts.length == 3) {
+                        controller.processBuy(parts[1], Integer.parseInt(parts[2]));
+                    } else {
+                        System.out.println("Usage: BUY <ticker> <quantity>");
+                    }
+                    break;
+
+                case "SELL":
+                    if (parts.length == 3) {
+                        controller.processSell(parts[1], Integer.parseInt(parts[2]));
+                    } else {
+                        System.out.println("Usage: SELL <ticker> <quantity>");
+                    }
+                    break;
+
+                case "NEXT":
+                    controller.advanceDay();
+                    break;
+
+                case "QUIT":
+                    System.out.println("Thanks for playing!");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Unknown command.");
+            }
         }
+
+        scanner.close();
     }
 }

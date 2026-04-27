@@ -26,4 +26,17 @@ public class TradeController {
     public void advanceDay() {
         market.nextDay();
     }
+
+    public void processSell(String ticker, int quantity) {
+    Company company = market.findCompany(ticker);
+    if (company == null) {
+        System.out.println("Company not found.");
+        return;
+    }
+    player.sell(company, quantity);
+    }
+
+    public boolean isGameOver() {
+        return market.getCurrentDay() > 30; // or whatever your end condition is
+    }
 }

@@ -1,3 +1,5 @@
+package view;
+
 import model.Company;
 import model.MarketObserver;
 import model.MarketSimulator;

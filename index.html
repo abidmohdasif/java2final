@@ -4,187 +4,646 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Portfolio Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --green: #639922; --green-light: #EAF3DE; --red: #E24B4A; --red-light: #FCEBEB; --bg: #f7f7f5; --surface: #ffffff; --surface2: #f1f0eb; --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22); --text: #1a1a18; --text2: #5f5e5a; --radius: 8px; --radius-lg: 12px; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2c; --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2); --text: #f0efe8; --text2: #888780; --green-light: #173404; --red-light: #501313; }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Courier New', Courier, monospace; background: var(--bg); color: var(--text); padding: 24px 20px; min-height: 100vh; }
-  #app { max-width: 740px; margin: 0 auto; }
-  .hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
-  .hdr h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.07em; color: var(--text); }
-  .day-badge { font-size: 12px; color: var(--text2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 3px 10px; }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
-  .metric { background: var(--surface2); border-radius: var(--radius); padding: 10px 12px; }
-  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; letter-spacing: 0.06em; }
-  .metric-val { font-size: 18px; font-weight: 600; color: var(--text); }
-  .metric-val.pos { color: var(--green); }
-  .metric-val.neg { color: var(--red); }
-  .advance-btn { width: 100%; padding: 9px; font-family: 'Courier New', Courier, monospace; font-size: 13px; cursor: pointer; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--surface2); color: var(--text); letter-spacing: 0.05em; margin-bottom: 12px; transition: background 0.15s; }
-  .advance-btn:hover { background: var(--border); }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  @media(max-width: 500px) { .cols { grid-template-columns: 1fr; } }
-  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 0; }
-  .card-title { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; margin-bottom: 10px; }
-  .stock-row { display: flex; align-items: center; gap: 6px; padding: 7px 0; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
-  .stock-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .ticker { font-size: 13px; font-weight: 600; color: var(--text); min-width: 42px; }
-  .price { font-size: 13px; color: var(--text); min-width: 62px; }
-  .chg { font-size: 11px; min-width: 52px; }
-  .chg.up { color: var(--green); }
-  .chg.dn { color: var(--red); }
-  .qty-input { width: 52px; font-family: 'Courier New', Courier, monospace; font-size: 12px; padding: 3px 6px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--surface2); color: var(--text); }
-  .btn-buy, .btn-sell { font-size: 11px; padding: 3px 8px; border-radius: var(--radius); cursor: pointer; font-family: 'Courier New', Courier, monospace; transition: background 0.1s; }
-  .btn-buy { background: var(--green-light); color: #27500A; border: 0.5px solid #97C459; }
-  .btn-sell { background: var(--red-light); color: #791F1F; border: 0.5px solid #F09595; }
-  .btn-buy:hover { filter: brightness(0.93); }
-  .btn-sell:hover { filter: brightness(0.93); }
-  .hold-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
-  .hold-row:last-child { border-bottom: none; }
-  .hold-name { color: var(--text); font-weight: 600; }
-  .hold-qty { color: var(--text2); }
-  .hold-val { color: var(--text); }
-  .empty-msg { font-size: 12px; color: var(--text2); padding: 8px 0; }
-  .chart-wrap { position: relative; height: 200px; margin-bottom: 12px; }
-  .log { max-height: 150px; overflow-y: auto; font-size: 11px; line-height: 1.8; }
-  .log-entry.buy { color: var(--green); }
-  .log-entry.sell { color: var(--red); }
-  .log-entry.day { color: var(--text2); border-top: 0.5px dashed var(--border); margin-top: 2px; padding-top: 3px; }
-  .gap12 { display: flex; flex-direction: column; gap: 12px; }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 7px 18px; border-radius: var(--radius); font-size: 12px; font-family: 'Courier New', Courier, monospace; background: var(--surface); border: 0.5px solid var(--border2); color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-  .toast.show { opacity: 1; }
+/* ── TOKENS ───────────────────────────────────────── */
+:root {
+  --bg:        #0d0f11;
+  --surface:   #13161a;
+  --surface2:  #1a1e24;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.14);
+  --text:      #e8e6df;
+  --muted:     #5a5f6b;
+  --green:     #3ddc84;
+  --green-dim: rgba(61,220,132,0.12);
+  --red:       #ff5c5c;
+  --red-dim:   rgba(255,92,92,0.12);
+  --gold:      #f0c040;
+  --accent:    #4f8ef7;
+  --radius:    6px;
+  --radius-lg: 10px;
+}
+
+/* ── RESET ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Space Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE OVERLAY ─────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.07) 2px,
+    rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── LAYOUT ───────────────────────────────────────── */
+#shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 52px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ───────────────────────────────────────── */
+#topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: relative;
+  z-index: 10;
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--text);
+}
+.logo span { color: var(--gold); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+#day-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+#clock {
+  color: var(--muted);
+  font-size: 11px;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────── */
+#sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-section {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* METRIC TILES */
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.tile {
+  background: var(--surface2);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+}
+.tile-label { font-size: 8px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 3px; }
+.tile-val   { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1; }
+.tile-val.pos { color: var(--green); }
+.tile-val.neg { color: var(--red); }
+
+/* ADVANCE BUTTON */
+.adv-btn {
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.adv-btn:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0d0f11;
+}
+.adv-btn:active { opacity: 0.8; }
+
+/* HOLDINGS */
+#hold-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 16px;
+}
+#hold-list::-webkit-scrollbar { width: 4px; }
+#hold-list::-webkit-scrollbar-track { background: transparent; }
+#hold-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.hold-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  gap: 6px;
+}
+.hold-item:last-child { border-bottom: none; }
+.hold-tk  { font-weight: 700; color: var(--text); min-width: 38px; }
+.hold-qty { color: var(--muted); }
+.hold-pnl { text-align: right; }
+.hold-pnl .val   { font-weight: 700; }
+.hold-pnl .small { font-size: 9px; color: var(--muted); }
+.empty-state { font-size: 11px; color: var(--muted); padding: 8px 0; }
+
+/* ── MAIN PANEL ───────────────────────────────────── */
+#main {
+  display: grid;
+  grid-template-rows: 1fr 180px;
+  overflow: hidden;
+}
+
+/* ── MARKET TABLE ─────────────────────────────────── */
+#market-wrap {
+  overflow-y: auto;
+  padding: 0;
+}
+#market-wrap::-webkit-scrollbar { width: 4px; }
+#market-wrap::-webkit-scrollbar-track { background: transparent; }
+#market-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+#market-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+#market-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+  z-index: 2;
+}
+#market-table thead th:last-child { text-align: right; }
+#market-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+#market-table tbody tr:hover { background: var(--surface2); }
+#market-table td {
+  padding: 9px 14px;
+  vertical-align: middle;
+}
+.col-ticker {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  min-width: 52px;
+}
+.col-name   { color: var(--muted); font-size: 11px; }
+.col-type   { font-size: 9px; letter-spacing: 0.1em; }
+.type-bull  { color: var(--green); }
+.type-vol   { color: var(--gold); }
+.col-price  { font-weight: 700; font-size: 13px; color: var(--text); }
+.col-chg    { font-size: 11px; min-width: 60px; }
+.col-chg.up { color: var(--green); }
+.col-chg.dn { color: var(--red); }
+.col-actions { text-align: right; white-space: nowrap; }
+
+.qty-inp {
+  width: 48px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 3px 6px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.qty-inp::-webkit-inner-spin-button,
+.qty-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.btn-b, .btn-s {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 4px 9px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid;
+  transition: filter 0.1s, transform 0.08s;
+  margin-left: 4px;
+}
+.btn-b:active, .btn-s:active { transform: scale(0.96); }
+.btn-b { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.btn-s { background: var(--red-dim);   border-color: var(--red);   color: var(--red); }
+.btn-b:hover { filter: brightness(1.3); }
+.btn-s:hover { filter: brightness(1.3); }
+
+/* ── BOTTOM PANEL ─────────────────────────────────── */
+#bottom {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* CHART */
+#chart-wrap {
+  padding: 10px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+#price-chart { width: 100% !important; height: 140px !important; }
+
+/* LOG */
+#log-wrap {
+  border-left: 1px solid var(--border);
+  padding: 10px 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#log-scroll {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 10px;
+  line-height: 1.9;
+}
+#log-scroll::-webkit-scrollbar { width: 3px; }
+#log-scroll::-webkit-scrollbar-track { background: transparent; }
+#log-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.le-buy  { color: var(--green); }
+.le-sell { color: var(--red); }
+.le-day  { color: var(--muted); border-top: 1px dashed var(--border); margin-top: 3px; padding-top: 3px; }
+
+/* ── TOAST ────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 11px;
+  color: var(--text);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MOBILE FALLBACK ──────────────────────────────── */
+@media (max-width: 720px) {
+  #shell { grid-template-columns: 1fr; grid-template-rows: 52px auto 1fr auto; height: auto; }
+  #sidebar { overflow: visible; }
+  #main { grid-template-rows: auto 220px; }
+  #bottom { grid-template-columns: 1fr; }
+  #log-wrap { border-left: none; border-top: 1px solid var(--border); }
+  body::before { display: none; }
+}
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="hdr">
-    <h1>PORTFOLIO SIMULATOR</h1>
-    <span class="day-badge" id="day-label">DAY 1</span>
-  </div>
+<div id="shell">
 
-  <div class="metrics">
-    <div class="metric"><div class="metric-label">CASH</div><div class="metric-val" id="m-cash">$100,000</div></div>
-    <div class="metric"><div class="metric-label">HOLDINGS</div><div class="metric-val" id="m-hold">$0</div></div>
-    <div class="metric"><div class="metric-label">TOTAL VALUE</div><div class="metric-val" id="m-total">$100,000</div></div>
-    <div class="metric"><div class="metric-label">P&amp;L</div><div class="metric-val" id="m-pnl">$0</div></div>
-  </div>
-
-  <button class="advance-btn" onclick="advanceDay()">&#9654; ADVANCE TO NEXT DAY</button>
-
-  <div class="cols">
-    <div class="card">
-      <div class="card-title">MARKET</div>
-      <div id="market-rows"></div>
+  <!-- ── TOPBAR ── -->
+  <header id="topbar">
+    <div class="logo">PORTFOLIO<span>SIM</span></div>
+    <div class="topbar-right">
+      <span id="day-pill">DAY 1</span>
+      <span>25 LISTED COMPANIES</span>
+      <span id="clock">--:--:--</span>
     </div>
-    <div class="card">
-      <div class="card-title">YOUR HOLDINGS</div>
-      <div id="hold-rows"></div>
-    </div>
-  </div>
+  </header>
 
-  <div class="gap12">
-    <div class="card">
-      <div class="card-title">PRICE HISTORY</div>
-      <div class="chart-wrap">
-        <canvas id="price-chart" role="img" aria-label="Line chart showing stock price history over multiple days"></canvas>
+  <!-- ── SIDEBAR ── -->
+  <aside id="sidebar">
+
+    <div class="sidebar-section">
+      <div class="section-label">Account Overview</div>
+      <div class="metric-grid">
+        <div class="tile"><div class="tile-label">CASH</div><div class="tile-val" id="m-cash">$100,000</div></div>
+        <div class="tile"><div class="tile-label">HOLDINGS</div><div class="tile-val" id="m-hold">$0</div></div>
+        <div class="tile"><div class="tile-label">TOTAL VALUE</div><div class="tile-val" id="m-total">$100,000</div></div>
+        <div class="tile"><div class="tile-label">P&amp;L</div><div class="tile-val" id="m-pnl">$0</div></div>
+      </div>
+      <button class="adv-btn" onclick="advanceDay()">▶ ADVANCE TO NEXT DAY</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-label">Your Holdings</div>
+    </div>
+    <div id="hold-list">
+      <div class="empty-state">No positions held.</div>
+    </div>
+
+  </aside>
+
+  <!-- ── MAIN PANEL ── -->
+  <div id="main">
+
+    <div id="market-wrap">
+      <table id="market-table">
+        <thead>
+          <tr>
+            <th>TICKER</th>
+            <th>COMPANY</th>
+            <th>TYPE</th>
+            <th>PRICE</th>
+            <th>CHANGE</th>
+            <th>TRADE</th>
+          </tr>
+        </thead>
+        <tbody id="market-body"></tbody>
+      </table>
+    </div>
+
+    <div id="bottom">
+      <div id="chart-wrap">
+        <div class="panel-label">PRICE HISTORY — TOP 6 STOCKS</div>
+        <canvas id="price-chart" aria-label="Line chart showing price history"></canvas>
+      </div>
+      <div id="log-wrap">
+        <div class="panel-label">TRANSACTION LOG</div>
+        <div id="log-scroll"></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">TRANSACTION LOG</div>
-      <div class="log" id="log"></div>
-    </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const STOCKS = [
-  { ticker: 'ZENE', name: 'Zenith Energy',    price: 155.20, vol: 0.025 },
-  { ticker: 'AETH', name: 'Aether Systems',   price: 92.10,  vol: 0.030 },
-  { ticker: 'NOVA', name: 'Nova Robotics',    price: 214.50, vol: 0.035 },
-  { ticker: 'FLUX', name: 'Flux Dynamics',    price: 47.80,  vol: 0.040 },
+// ═══════════════════════════════════════════════════════
+//  DATA — mirrors MarketDataFactory.java exactly
+// ═══════════════════════════════════════════════════════
+const COMPANIES = [
+  { ticker:'ZENE', name:'Zenith Energy',      desc:'Leader in fusion research and clean power.',                    price:150.00, type:'bull' },
+  { ticker:'AETH', name:'Aether Robotics',     desc:'Developing AI-driven home bots for personal use.',            price:95.00,  type:'vol'  },
+  { ticker:'BLMM', name:'Blue Marble Mining',  desc:'Pioneering asteroid extraction for rare metals.',             price:45.00,  type:'vol'  },
+  { ticker:'CSYG', name:'CloudSync Global',    desc:'Dominating the decentralized cloud storage market.',          price:120.00, type:'bull' },
+  { ticker:'VITA', name:'Vitality Pharm',      desc:'Breakthrough in human longevity drug research.',              price:80.00,  type:'vol'  },
+  { ticker:'IRON', name:'Ironclad Security',   desc:'Advanced cyber-defense systems for governments.',             price:65.00,  type:'bull' },
+  { ticker:'NOVA', name:'Nova Media',          desc:'Next-gen streaming platform optimized for VR.',               price:30.00,  type:'vol'  },
+  { ticker:'QUAN', name:'Quantum Compute',     desc:'Manufacturer of the world\'s fastest processors.',            price:210.00, type:'vol'  },
+  { ticker:'TERR', name:'TerraForm Ag',        desc:'Sustainable solutions for vertical indoor farming.',          price:55.00,  type:'bull' },
+  { ticker:'OCNP', name:'Ocean Pulse',         desc:'Infrastructure projects for underwater city living.',         price:40.00,  type:'vol'  },
+  { ticker:'STRL', name:'Star-Link Logistics', desc:'Satellite-based freight and supply chain tracking.',          price:110.00, type:'bull' },
+  { ticker:'APEX', name:'Apex FinTech',        desc:'Secure blockchain-based retail banking solutions.',           price:90.00,  type:'vol'  },
+  { ticker:'HYPR', name:'Hyperloop Transit',   desc:'High-speed vacuum rail transport technology.',                price:130.00, type:'bull' },
+  { ticker:'SYNB', name:'Synthesis Bio',       desc:'Custom-engineered synthetic organ manufacturing.',            price:75.00,  type:'vol'  },
+  { ticker:'EMER', name:'Ember Clean Power',   desc:'Cutting-edge thermal energy storage systems.',                price:60.00,  type:'bull' },
+  { ticker:'ORIA', name:'Orion Aerospace',     desc:'Commercial lunar cargo and exploration flights.',             price:160.00, type:'vol'  },
+  { ticker:'CLOG', name:'Core Logic Data',     desc:'Predictive analytics for enterprise decision-making.',        price:50.00,  type:'bull' },
+  { ticker:'DEEP', name:'Deep Blue Seafood',   desc:'Sustainable open-ocean aquaculture farms.',                   price:35.00,  type:'vol'  },
+  { ticker:'TITN', name:'Titan Construction',  desc:'Automated 3D-printing technology for skyscrapers.',          price:100.00, type:'bull' },
+  { ticker:'ZTEL', name:'Zenith Telematics',   desc:'Global real-time fleet management software.',                 price:45.00,  type:'vol'  },
+  { ticker:'PARA', name:'Paradigm Gaming',     desc:'Immersive, neural-link enabled virtual reality.',             price:25.00,  type:'vol'  },
+  { ticker:'SOLA', name:'Solara Panels',       desc:'Transparent glass panels with integrated solar cells.',       price:70.00,  type:'bull' },
+  { ticker:'VECT', name:'Vector Motors',       desc:'Self-driving electric commercial vehicle fleets.',            price:140.00, type:'vol'  },
+  { ticker:'NEXU', name:'Nexus Social',        desc:'AR-focused social networking and interaction.',               price:50.00,  type:'bull' },
+  { ticker:'CHRO', name:'Chronos Health',      desc:'Predictive genetic mapping for disease prevention.',          price:95.00,  type:'vol'  },
 ];
 
+// ═══════════════════════════════════════════════════════
+//  STATE  — mirrors Player + Portfolio + MarketSimulator
+// ═══════════════════════════════════════════════════════
 const state = {
   day: 1,
-  cash: 100000,
-  portfolio: {},
+  cash: 100_000,
+  portfolio: {},   // { ticker: { qty, avgCost } }
   prevPrices: {},
   log: [],
 };
 
-STOCKS.forEach(s => { state.prevPrices[s.ticker] = s.price; });
+// Seed prev prices
+COMPANIES.forEach(c => { state.prevPrices[c.ticker] = c.price; });
 
+// ═══════════════════════════════════════════════════════
+//  PRICE UPDATE — mirrors BullMarketStrategy / VolatileStrategy
+// ═══════════════════════════════════════════════════════
+function updatePrice(c) {
+  let factor;
+  if (c.type === 'bull') {
+    factor = 1 + Math.random() * 0.04;           // 0–4% gain
+  } else {
+    factor = 0.92 + Math.random() * 0.16;        // -8% to +8%
+  }
+  c.price = Math.round(c.price * factor * 100) / 100;
+  c.price = Math.max(0.01, c.price);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
 const fmt    = v => '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-const fmtInt = v => '$' + Math.round(v).toLocaleString();
+const fmtInt = v => '$' + Math.round(Math.abs(v)).toLocaleString();
 
 function holdingsValue() {
-  return STOCKS.reduce((sum, s) => sum + s.price * (state.portfolio[s.ticker] || 0), 0);
+  return COMPANIES.reduce((sum, c) => {
+    const pos = state.portfolio[c.ticker];
+    return sum + c.price * (pos ? pos.qty : 0);
+  }, 0);
 }
 
-/* ── Render Market ───────────────────────────────────────────── */
+function findCompany(ticker) {
+  return COMPANIES.find(c => c.ticker === ticker) || null;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACTIONS — mirror TradeController.processBuy / processSell
+// ═══════════════════════════════════════════════════════
+function buy(ticker) {
+  const c   = findCompany(ticker);
+  const qty = parseInt(document.getElementById('qty-' + ticker).value) || 1;
+  const cost = c.price * qty;
+  if (cost > state.cash) { showToast('INSUFFICIENT FUNDS'); return; }
+
+  state.cash -= cost;
+  if (!state.portfolio[ticker]) state.portfolio[ticker] = { qty: 0, avgCost: 0 };
+  const pos = state.portfolio[ticker];
+  pos.avgCost = (pos.avgCost * pos.qty + cost) / (pos.qty + qty);
+  pos.qty += qty;
+
+  state.log.push({ type:'buy', msg:`D${state.day} BUY  ${qty}×${ticker} @ ${fmt(c.price)}` });
+  render();
+}
+
+function sell(ticker) {
+  const c     = findCompany(ticker);
+  const qty   = parseInt(document.getElementById('qty-' + ticker).value) || 1;
+  const pos   = state.portfolio[ticker];
+  if (!pos || pos.qty < qty) { showToast('NOT ENOUGH SHARES'); return; }
+
+  const proceeds = c.price * qty;
+  state.cash += proceeds;
+  pos.qty -= qty;
+  if (pos.qty <= 0) delete state.portfolio[ticker];
+
+  state.log.push({ type:'sell', msg:`D${state.day} SELL ${qty}×${ticker} @ ${fmt(c.price)}` });
+  render();
+}
+
+// advanceDay — mirrors MarketSimulator.nextDay()
+function advanceDay() {
+  state.log.push({ type:'day', msg:`─── END OF DAY ${state.day} ───` });
+  COMPANIES.forEach(c => {
+    state.prevPrices[c.ticker] = c.price;
+    updatePrice(c);
+  });
+  state.day++;
+  document.getElementById('day-pill').textContent = 'DAY ' + state.day;
+  updateChart();
+  render();
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER MARKET — mirrors MarketView.display()
+// ═══════════════════════════════════════════════════════
 function renderMarket() {
-  document.getElementById('market-rows').innerHTML = STOCKS.map(s => {
-    const prev    = state.prevPrices[s.ticker];
-    const chgPct  = (s.price - prev) / prev * 100;
-    const chgCls  = chgPct >= 0 ? 'up' : 'dn';
-    const chgStr  = (chgPct >= 0 ? '+' : '') + chgPct.toFixed(2) + '%';
-    return `<div class="stock-row">
-      <span class="ticker">${s.ticker}</span>
-      <span class="price">${fmt(s.price)}</span>
-      <span class="chg ${chgCls}">${chgStr}</span>
-      <input class="qty-input" id="qty-${s.ticker}" type="number" min="1" value="1" />
-      <button class="btn-buy"  onclick="buy('${s.ticker}')">BUY</button>
-      <button class="btn-sell" onclick="sell('${s.ticker}')">SELL</button>
-    </div>`;
+  document.getElementById('market-body').innerHTML = COMPANIES.map(c => {
+    const prev   = state.prevPrices[c.ticker];
+    const pct    = (c.price - prev) / prev * 100;
+    const cls    = pct >= 0 ? 'up' : 'dn';
+    const chgStr = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    const typeLbl = c.type === 'bull' ? 'BULL' : 'VOLATILE';
+    const typeCls = c.type === 'bull' ? 'type-bull' : 'type-vol';
+    return `<tr>
+      <td class="col-ticker">${c.ticker}</td>
+      <td class="col-name">${c.name}</td>
+      <td class="col-type ${typeCls}">${typeLbl}</td>
+      <td class="col-price">${fmt(c.price)}</td>
+      <td class="col-chg ${cls}">${chgStr}</td>
+      <td class="col-actions">
+        <input class="qty-inp" id="qty-${c.ticker}" type="number" min="1" value="1" />
+        <button class="btn-b" onclick="buy('${c.ticker}')">BUY</button>
+        <button class="btn-s" onclick="sell('${c.ticker}')">SELL</button>
+      </td>
+    </tr>`;
   }).join('');
 }
 
-/* ── Render Holdings ─────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  RENDER HOLDINGS — mirrors PortfolioView.display()
+// ═══════════════════════════════════════════════════════
 function renderHoldings() {
-  const el   = document.getElementById('hold-rows');
-  const held = STOCKS.filter(s => (state.portfolio[s.ticker] || 0) > 0);
-  if (!held.length) { el.innerHTML = '<div class="empty-msg">No positions held.</div>'; return; }
-  el.innerHTML = held.map(s => {
-    const qty = state.portfolio[s.ticker];
-    const val = qty * s.price;
-    return `<div class="hold-row">
-      <span class="hold-name">${s.ticker}</span>
-      <span class="hold-qty">${qty} sh</span>
-      <span class="hold-val">${fmtInt(val)}</span>
+  const el   = document.getElementById('hold-list');
+  const keys = Object.keys(state.portfolio);
+  if (!keys.length) {
+    el.innerHTML = '<div class="empty-state">No positions held.</div>';
+    return;
+  }
+  el.innerHTML = keys.map(ticker => {
+    const c   = findCompany(ticker);
+    const pos = state.portfolio[ticker];
+    const val = c.price * pos.qty;
+    const pnl = (c.price - pos.avgCost) * pos.qty;
+    const cls = pnl >= 0 ? 'pos' : 'neg';
+    return `<div class="hold-item">
+      <span class="hold-tk">${ticker}</span>
+      <span class="hold-qty">${pos.qty}sh</span>
+      <div class="hold-pnl">
+        <div class="val ${cls}">${fmtInt(val)}</div>
+        <div class="small ${cls}">${pnl >= 0 ? '+' : ''}${fmtInt(pnl)}</div>
+      </div>
     </div>`;
   }).join('');
 }
 
-/* ── Render Metrics ──────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  RENDER METRICS
+// ═══════════════════════════════════════════════════════
 function renderMetrics() {
   const hv    = holdingsValue();
   const total = state.cash + hv;
-  const pnl   = total - 100000;
+  const pnl   = total - 100_000;
+
   document.getElementById('m-cash').textContent  = fmtInt(state.cash);
   document.getElementById('m-hold').textContent  = fmtInt(hv);
   document.getElementById('m-total').textContent = fmtInt(total);
+
   const pnlEl = document.getElementById('m-pnl');
-  pnlEl.textContent  = (pnl >= 0 ? '+' : '') + fmtInt(pnl);
-  pnlEl.className    = 'metric-val ' + (pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : '');
-  document.getElementById('day-label').textContent = 'DAY ' + state.day;
+  pnlEl.textContent = (pnl >= 0 ? '+' : '-') + fmtInt(pnl);
+  pnlEl.className   = 'tile-val ' + (pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : '');
 }
 
-/* ── Render Log ──────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  RENDER LOG
+// ═══════════════════════════════════════════════════════
 function renderLog() {
-  document.getElementById('log').innerHTML =
-    [...state.log].reverse()
-      .map(e => `<div class="log-entry ${e.type}">${e.msg}</div>`)
-      .join('');
+  const el = document.getElementById('log-scroll');
+  el.innerHTML = [...state.log].reverse()
+    .map(e => `<div class="le-${e.type}">${e.msg}</div>`)
+    .join('');
 }
 
-/* ── Chart ───────────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  CHART — top 6 companies for readability
+// ═══════════════════════════════════════════════════════
+const CHART_TICKERS = ['ZENE','QUAN','ORIA','VECT','CSYG','AETH'];
+const CHART_COLORS  = ['#3ddc84','#f0c040','#4f8ef7','#ff5c5c','#b47fff','#ff9f40'];
 let chart;
-const CHART_COLORS = ['#639922', '#E24B4A', '#185FA5', '#BA7517'];
 
 function initChart() {
   const ctx = document.getElementById('price-chart').getContext('2d');
@@ -192,33 +651,46 @@ function initChart() {
     type: 'line',
     data: {
       labels: ['Day 1'],
-      datasets: STOCKS.map((s, i) => ({
-        label: s.ticker,
-        data: [parseFloat(s.price.toFixed(2))],
-        borderColor: CHART_COLORS[i],
-        backgroundColor: 'transparent',
-        borderWidth: 1.5,
-        pointRadius: 2,
-        tension: 0.3,
-      }))
+      datasets: CHART_TICKERS.map((tk, i) => {
+        const c = findCompany(tk);
+        return {
+          label: tk,
+          data: [c.price],
+          borderColor: CHART_COLORS[i],
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          tension: 0.3,
+        };
+      })
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: { duration: 300 },
       plugins: {
         legend: {
           display: true,
-          labels: { font: { family: 'Courier New', size: 11 }, boxWidth: 10, padding: 12, color: '#888780' }
+          labels: {
+            font: { family: 'Space Mono', size: 9 },
+            color: '#5a5f6b',
+            boxWidth: 8,
+            padding: 10,
+          }
         }
       },
       scales: {
         x: {
-          ticks: { font: { family: 'Courier New', size: 10 }, color: '#888780' },
-          grid:  { color: 'rgba(136,135,128,0.15)' }
+          ticks: { font: { family: 'Space Mono', size: 9 }, color: '#5a5f6b', maxTicksLimit: 10 },
+          grid:  { color: 'rgba(255,255,255,0.04)' }
         },
         y: {
-          ticks: { font: { family: 'Courier New', size: 10 }, color: '#888780', callback: v => '$' + v.toFixed(0) },
-          grid:  { color: 'rgba(136,135,128,0.15)' }
+          ticks: {
+            font: { family: 'Space Mono', size: 9 },
+            color: '#5a5f6b',
+            callback: v => '$' + v.toFixed(0)
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' }
         }
       }
     }
@@ -227,57 +699,38 @@ function initChart() {
 
 function updateChart() {
   chart.data.labels.push('Day ' + state.day);
-  STOCKS.forEach((s, i) => { chart.data.datasets[i].data.push(parseFloat(s.price.toFixed(2))); });
+  CHART_TICKERS.forEach((tk, i) => {
+    chart.data.datasets[i].data.push(findCompany(tk).price);
+  });
   chart.update();
 }
 
-/* ── Actions ─────────────────────────────────────────────────── */
-function buy(ticker) {
-  const s    = STOCKS.find(x => x.ticker === ticker);
-  const qty  = parseInt(document.getElementById('qty-' + ticker).value) || 1;
-  const cost = s.price * qty;
-  if (cost > state.cash) { showToast('Insufficient funds'); return; }
-  state.cash -= cost;
-  state.portfolio[ticker] = (state.portfolio[ticker] || 0) + qty;
-  state.log.push({ type: 'buy', msg: `DAY ${state.day} | BUY  ${qty} ${ticker} @ ${fmt(s.price)} = ${fmt(cost)}` });
-  render();
-}
-
-function sell(ticker) {
-  const s       = STOCKS.find(x => x.ticker === ticker);
-  const qty     = parseInt(document.getElementById('qty-' + ticker).value) || 1;
-  const held    = state.portfolio[ticker] || 0;
-  if (qty > held) { showToast('Not enough shares'); return; }
-  const proceeds = s.price * qty;
-  state.cash += proceeds;
-  state.portfolio[ticker] -= qty;
-  state.log.push({ type: 'sell', msg: `DAY ${state.day} | SELL ${qty} ${ticker} @ ${fmt(s.price)} = ${fmt(proceeds)}` });
-  render();
-}
-
-function advanceDay() {
-  STOCKS.forEach(s => {
-    state.prevPrices[s.ticker] = s.price;
-    const drift = (Math.random() - 0.48) * 2 * s.vol;
-    s.price = Math.max(1, s.price * (1 + drift));
-  });
-  state.log.push({ type: 'day', msg: `─── End of Day ${state.day} ───────────────────` });
-  state.day++;
-  updateChart();
-  render();
-}
-
-/* ── Toast ───────────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
 let toastTimer;
 function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
-/* ── Init ────────────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════
+//  CLOCK
+// ═══════════════════════════════════════════════════════
+function tickClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toTimeString().slice(0, 8);
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+// ═══════════════════════════════════════════════════════
+//  RENDER ALL
+// ═══════════════════════════════════════════════════════
 function render() {
   renderMarket();
   renderHoldings();

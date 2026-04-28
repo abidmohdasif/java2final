@@ -26,7 +26,7 @@ public class MarketSimulator {
         }
     }
 
-    // Core Game Loop Trigger
+    // Core Game Loop
     public void nextDay() {
         currentDay++;
         latestNews = "Trading Day " + currentDay + " has concluded.";

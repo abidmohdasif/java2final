@@ -2,6 +2,13 @@
 ## 30-Day Trading Simulator
 A terminal-based stock trading simulation game written in Java. You start with $100,000 and have 30 days to grow your portfolio to $120,000. If not, your boss fires you. Each day, stock prices shift based on the market strategies and random news events that happen. 25 companies are in the game and all fictitious. 
 
+## How to run on the terminal
+
+Steps
+    - Download the ZIP from GitHub and extract it
+    - Open the extracted folder in VS Code
+    - Open Main.java and click the Run button at the top right
+
 ## In-Game Commands
 BUY <TICKER> <QTY>Buy shares of a company
 SELL <TICKER> <QTY>Sell shares you own
@@ -17,29 +24,25 @@ Every time nextDay() is called, all three views need to refresh. Instead of call
 ## MVC Structure
 
 src/main/java/
-
 ├── Main.java                  
 │
 ├── model/       
-
-│   ├── Company.java          
-│   ├── MarketDataFactory.java 
-│   ├── MarketObserver.java    
-│   ├── MarketSimulator.java  
-│   ├── Player.java            
-│   ├── Portfolio.java        
-│   └── PriceUpdateStrategy.java 
+├── Company.java          
+├── MarketDataFactory.java 
+├── MarketObserver.java    
+├── MarketSimulator.java  
+├── Player.java            
+├── Portfolio.java        
+└── PriceUpdateStrategy.java 
 │
 ├── controller/
-
-│   └── TradeController.java   
+└── TradeController.java   
 │
 └── view/
-
-    ├── MarketView.java        
-    ├── PortfolioView.java   
-    ├── EndGameView.java      
-    └── CompanyDetails.java   
+├── MarketView.java        
+├── PortfolioView.java   
+├── EndGameView.java      
+└── CompanyDetails.java   
 
 
 ## HOW TO RUN TESTS

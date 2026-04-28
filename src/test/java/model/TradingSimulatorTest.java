@@ -114,4 +114,43 @@ public class TradingSimulatorTest {
         for (int i = 0; i < 30; i++) ctrl.advanceDay();
         assertTrue(ctrl.isGameOver());
     }
+
+    @Test
+    void testAdvanceDayUpdatesMarket() {
+        MarketSimulator market = new MarketSimulator();
+        TradeController ctrl = new TradeController(market, new Player(100000.0));
+        ctrl.advanceDay();
+        assertEquals(2, market.getCurrentDay());
+    }
+
+    @Test
+    void testGameNotOverAtStart() {
+        MarketSimulator market = new MarketSimulator();
+        TradeController ctrl = new TradeController(market, new Player(100000.0));
+        assertFalse(ctrl.isGameOver());
+    }
+
+    @Test
+    void testBuyFailsWithNoMoney() {
+        MarketSimulator market = new MarketSimulator();
+        Player player = new Player(1.0);
+        TradeController ctrl = new TradeController(market, player);
+        ctrl.processBuy("QUAN", 10);
+        assertEquals(0, player.getPortfolio().getShares("QUAN"));
+    }
+
+    @Test
+    void testMarketViewDoesNotCrash() {
+        MarketSimulator market = new MarketSimulator();
+        MarketView view = new MarketView();
+        assertDoesNotThrow(() -> view.update(market));
+    }
+
+    @Test
+    void testPortfolioViewDoesNotCrash() {
+        MarketSimulator market = new MarketSimulator();
+        Player player = new Player(100000.0);
+        PortfolioView view = new PortfolioView(player);
+        assertDoesNotThrow(() -> view.update(market));
+    }
 }

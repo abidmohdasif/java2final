@@ -1,5 +1,6 @@
+package model;
 import org.junit.jupiter.api.Test;
-import model.*;
+
 import controller.TradeController;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -17,9 +17,11 @@ Every time nextDay() is called, all three views need to refresh. Instead of call
 ## MVC Structure
 
 src/main/java/
+
 ├── Main.java                  
 │
-├── model/                    
+├── model/       
+
 │   ├── Company.java          
 │   ├── MarketDataFactory.java 
 │   ├── MarketObserver.java    
@@ -29,9 +31,11 @@ src/main/java/
 │   └── PriceUpdateStrategy.java 
 │
 ├── controller/
+
 │   └── TradeController.java   
 │
 └── view/
+
     ├── MarketView.java        
     ├── PortfolioView.java   
     ├── EndGameView.java      

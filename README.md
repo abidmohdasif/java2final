@@ -35,4 +35,9 @@ src/main/java/
     ├── EndGameView.java      
     └── CompanyDetails.java   
 
+
+HOW TO RUN TESTS
+export JAVA_HOME=/usr/local/sdkman/candidates/java/21.0.10-ms
+export PATH="$JAVA_HOME/bin:$PATH"
+mvn clean test
     

@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+.gradle/**
+
+# Maven
+/target/
+
+# IDE
+*.iml
+.idea/
+.vscode/
+
+# Java
+out/
+*.class

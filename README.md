@@ -37,7 +37,10 @@ src/main/java/
 
 
 HOW TO RUN TESTS
-export JAVA_HOME=/usr/local/sdkman/candidates/java/21.0.10-ms
-export PATH="$JAVA_HOME/bin:$PATH"
-mvn clean test
+
+1 - export JAVA_HOME=/usr/local/sdkman/candidates/java/21.0.10-ms
+
+2 - export PATH="$JAVA_HOME/bin:$PATH"
+
+3 - mvn clean test
     

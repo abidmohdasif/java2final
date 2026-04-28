@@ -37,6 +37,6 @@ public class TradeController {
     }
 
     public boolean isGameOver() {
-        return market.getCurrentDay() > 30; // or whatever your end condition is
+        return market.getCurrentDay() > 30;
     }
 }

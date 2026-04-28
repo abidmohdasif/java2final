@@ -14,6 +14,8 @@ Creating 25 company objects with their names, tickers, descriptions, prices, and
 Observer Pattern
 Every time nextDay() is called, all three views need to refresh. Instead of calling each view manually from the controller, the simulator maintains a list of observers and notifies them all at once. This makes it easy to add or remove views without touching any game logic.
 
+MVC Structure
+
 src/main/java/
 ├── Main.java                  
 │
@@ -43,4 +45,15 @@ HOW TO RUN TESTS
 2 - export PATH="$JAVA_HOME/bin:$PATH"
 
 3 - mvn clean test
+
+
+Known Issues/Limitation
+
+No input validation on quantity
+
+No save/load
+
+
+AI Tool Usage
+All game logic, class design, and MVC structure were written by us. AI assistance was used for setting up Maven in VS Code and to get help when the errors were complicated and neither one of us knew why there was an error, not for the core application code.
     

@@ -6,7 +6,37 @@ import view.PortfolioView;
 import view.EndGameView;
 import java.util.Scanner;
 
+/**
+ * Entry point for the 30-Day Trading Simulator.
+ * <p>
+ * Initializes the market, player, controller, and all observer views,
+ * then runs the main game loop accepting player commands until the game
+ * ends or the player quits.
+ * </p>
+ *
+ * <p>Supported commands:</p>
+ * <ul>
+ *   <li>{@code BUY <ticker> <qty>}  — Purchase shares of a company</li>
+ *   <li>{@code SELL <ticker> <qty>} — Sell shares of a company</li>
+ *   <li>{@code NEXT}                — Advance to the next trading day</li>
+ *   <li>{@code QUIT}                — Exit the simulation early</li>
+ * </ul>
+ */
+
 public class Main {
+
+    /**
+     * Launches the trading simulator.
+     * <p>
+     * Sets up the {@link MarketSimulator}, {@link Player}, and
+     * {@link TradeController}, registers the {@link MarketView},
+     * {@link PortfolioView}, and {@link EndGameView} as observers,
+     * and enters the main command loop.
+     * </p>
+     *
+     * @param args command-line arguments (not used)
+     */
+    
     public static void main(String[] args) {
         MarketSimulator market = new MarketSimulator();
         Player player = new Player(100_000.0);

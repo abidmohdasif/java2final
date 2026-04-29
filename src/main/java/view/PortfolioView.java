@@ -6,13 +6,40 @@ import model.MarketObserver;
 import model.MarketSimulator;
 import model.Player;
 
+/**
+ * A {@link MarketObserver} that displays the player's portfolio summary
+ * to the console at the end of each simulation day.
+ * <p>
+ * Shows the player's available cash, a breakdown of all held shares with
+ * their current market value, and the total net worth (cash plus holdings).
+ * </p>
+ */
+
 public class PortfolioView implements MarketObserver {
     private Player player;
+
+    /**
+     * Constructs a PortfolioView for the given player.
+     *
+     * @param player the {@link Player} whose portfolio will be displayed
+     */
 
     public PortfolioView(Player player) {
         this.player = player;
     }
 
+    /**
+     * Displays the player's current portfolio summary.
+     * <p>
+     * Prints the player's available cash, each held stock with its share count
+     * and current market value, and the total net worth. If the player holds
+     * no shares, "Holdings: None" is displayed instead.
+     * </p>
+     *
+     * @param market the {@link MarketSimulator} used to look up current
+     *               prices for each held company
+     */
+    
     @Override
     public void update(MarketSimulator market) {
         System.out.println("------------- YOUR PORTFOLIO -------------");

@@ -3,8 +3,30 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Factory class responsible for creating and initializing all companies
+ * available in the market simulation.
+ * <p>
+ * Each company is assigned a name, ticker symbol, description, starting price,
+ * and a {@link PriceUpdateStrategy} (either {@link BullMarketStrategy} for
+ * steady growth or {@link VolatileStrategy} for unpredictable price swings).
+ * </p>
+ */
+
 public class MarketDataFactory {
     public static List<Company> createAllCompanies() {
+
+         /**
+     * Creates and returns a list of all companies available in the simulation.
+     * <p>
+     * The list includes 25 companies across a variety of industries such as
+     * energy, robotics, aerospace, biotech, fintech, and more. Each company
+     * is pre-configured with an initial stock price and pricing strategy.
+     * </p>
+     *
+     * @return a {@link List} of {@link Company} objects representing all tradeable companies
+     */
+    
         List<Company> list = new ArrayList<>();
         
         list.add(new Company("Zenith Energy", "ZENE", "Leader in fusion research and clean power.", 150.0, new BullMarketStrategy()));

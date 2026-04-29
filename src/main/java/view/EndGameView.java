@@ -6,13 +6,48 @@ import model.MarketObserver;
 import model.MarketSimulator;
 import model.Player;
 
+/**
+ * A {@link MarketObserver} that displays the end-game summary when the
+ * 30-day simulation concludes.
+ * <p>
+ * Once the current day reaches or exceeds 30, this view calculates the
+ * player's final net worth (cash plus the market value of all held shares)
+ * and determines whether they met the win condition of $120,000.
+ * </p>
+ */
+
 public class EndGameView implements MarketObserver {
+
     private Player player;
+
+    /** The minimum net worth required to win the game. */
+    private static final double WIN_CONDITION = 120000.0;
+
+    /**
+     * Constructs an EndGameView for the given player.
+     *
+     * @param player the {@link Player} whose final net worth will be evaluated
+     */
+
     private static final double WIN_CONDITION = 120000.0;
 
     public EndGameView(Player player) {
         this.player = player;
     }
+
+    /**
+     * Checks whether the simulation has ended and, if so, displays the
+     * final net worth and win/loss result.
+     * <p>
+     * Final net worth is calculated as the player's remaining cash plus
+     * the current market value of all shares in their portfolio.
+     * If the net worth meets or exceeds {@value #WIN_CONDITION}, the player wins.
+     * The application exits after the summary is printed.
+     * </p>
+     *
+     * @param market the {@link MarketSimulator} providing the current day
+     *               and company prices
+     */
 
     @Override
     public void update(MarketSimulator market) {

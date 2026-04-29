@@ -29,8 +29,6 @@ public class EndGameView implements MarketObserver {
      * @param player the {@link Player} whose final net worth will be evaluated
      */
 
-    private static final double WIN_CONDITION = 120000.0;
-
     public EndGameView(Player player) {
         this.player = player;
     }

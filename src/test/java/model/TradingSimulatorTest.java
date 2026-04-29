@@ -2,6 +2,8 @@ package model;
 import org.junit.jupiter.api.Test;
 
 import controller.TradeController;
+import view.MarketView;
+import view.PortfolioView;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TradingSimulatorTest {

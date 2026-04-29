@@ -194,4 +194,43 @@ public class TradingSimulatorTest {
         Company c = new MarketSimulator().findCompany("ZENE");
         assertDoesNotThrow(() -> CompanyDetails.displayDetails(c));
     }
+    @Test
+    void testBuyAddsToPortfolio() {
+        Player player = new Player(100000.0);
+        TradeController ctrl = new TradeController(new MarketSimulator(), player);
+        ctrl.processBuy("ZENE", 1);
+        assertEquals(1, player.getPortfolio().getShares("ZENE"));
+    }
+
+    @Test
+    void testSellReducesShares() {
+        Player player = new Player(100000.0);
+        TradeController ctrl = new TradeController(new MarketSimulator(), player);
+        ctrl.processBuy("ZENE", 5);
+        ctrl.processSell("ZENE", 2);
+        assertEquals(3, player.getPortfolio().getShares("ZENE"));
+    }
+
+    @Test
+    void testNotGameOverOnDay1() {
+        TradeController ctrl = new TradeController(new MarketSimulator(), new Player(100000.0));
+        assertFalse(ctrl.isGameOver());
+    }
+
+    @Test
+    void testPortfolioViewWithHoldingsNoCrash() {
+        MarketSimulator market = new MarketSimulator();
+        Player player = new Player(100000.0);
+        player.buy(market.findCompany("ZENE"), 3);
+        PortfolioView view = new PortfolioView(player);
+        assertDoesNotThrow(() -> view.update(market));
+    }
+
+    @Test
+    void testMarketViewAfterNextDayNoCrash() {
+        MarketSimulator market = new MarketSimulator();
+        market.nextDay();
+        MarketView view = new MarketView();
+        assertDoesNotThrow(() -> view.update(market));
+    }
 }

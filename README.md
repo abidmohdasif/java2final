@@ -50,6 +50,8 @@ CompanyDetails.java
 
 3 - mvn test
 
+4 - cd target/site/jacoco && python3 -m http.server 8080
+
 
 ## Known Issues/Limitations
 

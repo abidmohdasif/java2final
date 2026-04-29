@@ -48,7 +48,7 @@ CompanyDetails.java
 
 2 - export PATH="$JAVA_HOME/bin:$PATH"
 
-3 - mvn clean test
+3 - mvn test
 
 
 ## Known Issues/Limitations

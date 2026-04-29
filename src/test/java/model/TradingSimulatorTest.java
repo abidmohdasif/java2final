@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import controller.TradeController;
 import view.MarketView;
 import view.PortfolioView;
+import view.EndGameView;
+import view.CompanyDetails;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TradingSimulatorTest {

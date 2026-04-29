@@ -60,5 +60,5 @@ No save/load
 
 ## AI Tool Usage
 
-All game logic, class design, and MVC structure were written by us. AI assistance was used for setting up Maven in VS Code and to get help when the errors were complicated and neither one of us knew why there was an error, not for the core application code.
+All game logic, class design, testing, and MVC structure were written by us. AI assistance was used for setting up Maven in VS Code and to get help when the errors were complicated and neither one of us knew why there was an error, not for the core application code. It was also used to help us come up with tests ideas when we ran out of things to test but didnt meet the coverage requirments. AI was used slightly to help with javadocs.
     

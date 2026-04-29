@@ -155,4 +155,41 @@ public class TradingSimulatorTest {
         PortfolioView view = new PortfolioView(player);
         assertDoesNotThrow(() -> view.update(market));
     }
+    @Test
+    void testAdvanceDayTwice() {
+        MarketSimulator market = new MarketSimulator();
+        TradeController ctrl = new TradeController(market, new Player(100000.0));
+        ctrl.advanceDay();
+        ctrl.advanceDay();
+        assertEquals(3, market.getCurrentDay());
+    }
+
+    @Test
+    void testBuyFakeTickerNoShares() {
+        Player player = new Player(100000.0);
+        TradeController ctrl = new TradeController(new MarketSimulator(), player);
+        ctrl.processBuy("FAKE", 5);
+        assertEquals(0, player.getPortfolio().getShares("FAKE"));
+    }
+
+    @Test
+    void testSellFakeCashUnchanged() {
+        Player player = new Player(100000.0);
+        TradeController ctrl = new TradeController(new MarketSimulator(), player);
+        ctrl.processSell("FAKE", 5);
+        assertEquals(100000.0, player.getCash(), 0.001);
+    }
+
+    @Test
+    void testEndGameViewNocrash() {
+        Player player = new Player(100000.0);
+        EndGameView view = new EndGameView(player);
+        assertDoesNotThrow(() -> view.update(new MarketSimulator()));
+    }
+
+    @Test
+    void testCompanyDetailsNoCrash() {
+        Company c = new MarketSimulator().findCompany("ZENE");
+        assertDoesNotThrow(() -> CompanyDetails.displayDetails(c));
+    }
 }

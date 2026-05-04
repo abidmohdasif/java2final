@@ -26,11 +26,17 @@ Every time nextDay() is called, all three views need to refresh. Instead of call
 ### model/
 
 Company.java
+
 MarketDataFactory.java
+
 MarketObserver.java
+
 MarketSimulator.java
+
 Player.java
+
 Portfolio.java
+
 PriceUpdateStrategy.java
 
 ### controller/
@@ -40,8 +46,11 @@ TradeController.java
 ### view/
 
 MarketView.java
+
 PortfolioView.java
+
 EndGameView.java
+
 CompanyDetails.java
 
 
